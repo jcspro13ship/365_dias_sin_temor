@@ -330,9 +330,41 @@ body{font-family:'Crimson Text',Georgia,serif;background:var(--cream);color:var(
   :root{--top:64px;--tab:66px;}
 }
 
+
+/* â”€â”€ Welcome screen â”€â”€ */
+#welcome{position:fixed;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(145deg,#1a365d,#2c5282);
+  display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;
+  -webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;
+  z-index:9999;padding:32px 24px;text-align:center;}
+.wlc-logo{font-size:4rem;font-weight:800;color:#d4a574;font-family:'Montserrat',Arial,sans-serif;line-height:1;margin-bottom:4px;}
+.wlc-sub{font-size:.85rem;letter-spacing:4px;color:rgba(255,255,255,.6);font-family:'Montserrat',Arial,sans-serif;font-weight:600;margin-bottom:32px;}
+.wlc-card{background:white;border-radius:20px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+.wlc-title{font-size:1.4rem;font-weight:700;color:#1a365d;font-family:'Playfair Display',Georgia,serif;margin-bottom:8px;}
+.wlc-desc{font-size:.85rem;color:#718096;font-family:'Montserrat',Arial,sans-serif;line-height:1.6;margin-bottom:22px;}
+.wlc-input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem;font-family:'Montserrat',Arial,sans-serif;color:#2d3748;-webkit-appearance:none;outline:none;text-align:center;margin-bottom:14px;box-sizing:border-box;}
+.wlc-input:focus{border-color:#2c5282;}
+.wlc-btn{width:100%;padding:15px;background:linear-gradient(135deg,#1a365d,#2c5282);color:white;border:none;border-radius:12px;font-size:.95rem;font-weight:800;font-family:'Montserrat',Arial,sans-serif;cursor:pointer;-webkit-appearance:none;letter-spacing:.5px;}
+.wlc-skip{margin-top:12px;font-size:.78rem;color:#718096;font-family:'Montserrat',Arial,sans-serif;cursor:pointer;text-decoration:underline;background:none;border:none;-webkit-appearance:none;display:block;width:100%;}
+
 </style>
 </head>
 <body>
+<!-- WELCOME -->
+<div id="welcome">
+  <div class="wlc-logo">365</div>
+  <div class="wlc-sub">D&#205;AS SIN TEMOR</div>
+  <div class="wlc-card">
+    <div class="wlc-title">&#161;Bienvenido/a!</div>
+    <div class="wlc-desc">Tu gu&#237;a devocional de 365 d&#237;as para vivir sin miedo.<br><br>&#191;C&#243;mo te llamas?</div>
+    <input type="text" class="wlc-input" id="wlc-name" placeholder="Tu nombre"
+      autocorrect="off" autocapitalize="words"
+      onkeydown="if(event.keyCode===13){this.blur();setTimeout(startApp,150);}">
+    <button class="wlc-btn" onclick="startApp()">Comenzar &#8594;</button>
+    <button class="wlc-skip" onclick="startApp()">Continuar sin nombre</button>
+  </div>
+</div>
+
 
 <!-- LOADING -->
 
@@ -861,8 +893,24 @@ document.addEventListener('keydown',function(e){
 
 </script>
 <script>
+function startApp(){
+  var nm=(document.getElementById('wlc-name').value||'').trim();
+  if(nm){S.userName=nm;saveS();}
+  document.getElementById('welcome').style.display='none';
+  try{
+    var sub=document.getElementById('top-sub');
+    if(sub) sub.textContent=nm?('Hola, '+nm+' í ½í±‹'):'365 DÃ­as Sin Temor';
+  }catch(e){}
+}
+</script>
+<script>
 try{loadS();}catch(e){}
 try{initApp();}catch(e){}
+try{
+  if(S.userName&&S.userName.trim().length>0){
+    document.getElementById('welcome').style.display='none';
+  }
+}catch(e){}
 </script>
 </body>
 </html>

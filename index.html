@@ -649,9 +649,11 @@ function initApp(){
 // HOY
 // ══════════════════════════════════════════════════════
 function getToday(){
-  if(!S.activationDate) return 1;
-  var d = Math.floor((Date.now()-new Date(S.activationDate))/86400000);
-  return Math.min(Math.max(d+1,1),365);
+  // Returns the next unread day (first day not yet marked as read)
+  for(var i=1;i<=365;i++){
+    if(S.readDays.indexOf(i)<0) return i;
+  }
+  return 365; // all done!
 }
 
 // ══════════════════════════════════════════════════════
@@ -754,10 +756,17 @@ function closeRead(){
 }
 function navDay(d){ var n=curDay+d; if(n>=1&&n<=365) openDay(n); }
 function markDone(){
-  if(!S.readDays.indexOf(curDay)>=0){ S.readDays.push(curDay); saveS(); toast('✅ ¡Día '+curDay+' completado!'); }
-  else toast('📖 Ya habías leído este día');
+  if(S.readDays.indexOf(curDay)<0){
+    S.readDays.push(curDay);
+    saveS();
+    toast('✅ ¡Día '+curDay+' completado!');
+  } else {
+    S.readDays.splice(S.readDays.indexOf(curDay),1);
+    saveS();
+    toast('↩ Marcado como no leído');
+  }
   var db=document.getElementById('rv-done');
-  db.textContent='✓ ¡Ya leíste este día!'; db.className='btn-complete done';
+  if(db) db.className='btn-complete'+(S.readDays.indexOf(curDay)>=0?' done':'');
 }
 function toggleFav(){
   var i=S.favs.indexOf(curDay), fb=document.getElementById('fav-btn');

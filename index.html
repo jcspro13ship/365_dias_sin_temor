@@ -441,7 +441,7 @@ body{font-family:'Crimson Text',Georgia,serif;background:var(--cream);color:var(
     </div>
 
     <!-- SETTINGS -->
-    <div class="pg" id="pg-set">
+        <div class="pg" id="pg-set">
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-n" id="st-rd">0</div><div class="stat-l">Leídos</div></div>
         <div class="stat-box"><div class="stat-n" id="st-st">0</div><div class="stat-l">🔥 Racha</div></div>
@@ -452,66 +452,24 @@ body{font-family:'Crimson Text',Georgia,serif;background:var(--cream);color:var(
       <div class="set-group">
         <div class="set-group-title">👤 Mi Perfil</div>
         <div class="set-card">
-          <div class="set-row" style="flex-direction:column;align-items:flex-start;">
+          <div class="set-row" style="-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:flex-start;align-items:flex-start;">
             <div class="set-row-label">Tu nombre</div>
             <div class="set-row-desc">Personaliza la experiencia</div>
-            <input type="text" id="u-name" class="name-input" placeholder="Escribe tu nombre…"
-              oninput="saveName(this.value)">
+            <input type="text" id="u-name" class="name-input" placeholder="Escribe tu nombre…" oninput="saveName(this.value)" autocorrect="off" autocapitalize="words">
           </div>
         </div>
       </div>
 
       <div class="set-group">
-        <div class="set-group-title">🔔 Recordatorio Diario</div>
+        <div class="set-group-title">📅 Datos</div>
         <div class="set-card">
-          <div class="set-row">
-            <div><div class="set-row-label">Recordatorio</div><div class="set-row-desc">Te avisamos para leer</div></div>
-            <button class="toggle" id="rem-tog" onclick="toggleRem()"></button>
-          </div>
-          <div class="set-row">
-            <div><div class="set-row-label">Hora</div><div class="set-row-desc">¿Cuándo te avisamos?</div></div>
-            <input type="time" class="set-sel" id="rem-time" value="07:00" onchange="saveRemTime(this.value)">
-          </div>
-        </div>
-      </div>
-
-      <div class="set-group">
-        <div class="set-group-title">📖 Lectura</div>
-        <div class="set-card">
-          <div class="set-row">
-            <div><div class="set-row-label">Tamaño de texto</div><div class="set-row-desc">Para leer más cómodo</div></div>
-            <select class="set-sel" id="fsize" onchange="changeFont(this.value)">
-              <option value="0.85">Pequeño</option>
-              <option value="1">Normal</option>
-              <option value="1.15">Grande</option>
-              <option value="1.3">Muy grande</option>
-              <option value="1.2">Muy Grande</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="set-group">
-        <div class="set-group-title">ℹ️ Acerca de</div>
-        <div class="set-card">
-          <div class="set-row"><div><div class="set-row-label">365 Días Sin Temor</div><div class="set-row-desc">© 2024 Juan Carlos Santos L.</div></div></div>
-          <div class="set-row"><div><div class="set-row-label">Versión</div><div class="set-row-desc">2.0 — Edición Completa (365 días)</div></div></div>
-          <div class="set-row" style="cursor:pointer" onclick="resetProg()">
-            <div><div class="set-row-label" style="color:var(--red)">Reiniciar progreso</div><div class="set-row-desc">Borra los días leídos</div></div>
-            <span style="color:var(--txt2);font-size:1.1rem">›</span>
+          <div class="set-row" onclick="resetProg()" style="cursor:pointer;">
+            <div><div class="set-row-label">Reiniciar progreso de lectura</div><div class="set-row-desc">Borra los días leídos (favoritos y notas se conservan)</div></div>
+            <div style="color:#e53e3e;font-size:1.4rem;">›</div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="tabbar">
-    <button class="tab on" onclick="switchTab('home',this)"><span class="ti">🏠</span>Inicio</button>
-    <button class="tab" onclick="switchTab('read',this)"><span class="ti">📖</span>Leer</button>
-    <button class="tab" onclick="switchTab('fav',this)"><span class="ti">⭐</span>Favoritos</button>
-    <button class="tab" onclick="switchTab('set',this)"><span class="ti">⚙️</span>Ajustes</button>
-  </div>
-</div>
 
 <!-- READING VIEW -->
 <div id="rv">
@@ -613,8 +571,8 @@ for(var _i=0;_i<_D.length;_i++){var _x=_D[_i];DD.push({day:_x.a,title:_x.b,verse
 var curDay = 1, curFilter = 'all', srchQ = '';
 var S = {
   readDays:[], favs:[], notes:{}, streak:0,
-  userName:'', remOn:false, remTime:'07:00',
-  activationDate:null, fontSize:'1'
+  userName:'',
+  activationDate:null
 };
 var STORE = '_365v3';
 
@@ -675,11 +633,7 @@ function initApp(){
   }
   document.getElementById('app').style.display='-webkit-flex';document.getElementById('app').style.display='flex';
   document.getElementById('u-name').value = S.userName||'';
-  document.getElementById('rem-time').value = S.remTime||'07:00';
-  document.getElementById('fsize').value = S.fontSize||'1';
-  applyFont();
   refresh();
-  setInterval(function(){ if(S.remOn) checkRem(); }, 60000);
 }
 
 // ══════════════════════════════════════════════════════
@@ -773,7 +727,6 @@ function openDay(n){
   document.getElementById('rv-ref').textContent=d.reflection;
   document.getElementById('rv-pr').textContent=d.prayer;
   document.getElementById('rv-nt').value=S.notes[n]||'';
-  try{applyFont();}catch(e){}
   var isR=S.readDays.indexOf(n)>=0;
   var db=document.getElementById('rv-done');
   db.textContent=isR?'✓ ¡Ya leíste este día!':'✓ Marcar como leído';
@@ -828,27 +781,7 @@ function rmFav(n){
   S.favs=f; saveS(); renderFavs(); toast('Eliminado de favoritos');
 }
 function saveName(v){ S.userName=v; saveS(); document.getElementById('top-sub').textContent=v?'Hola, '+v+' 👋':'Juan Carlos Santos L.'; }
-function toggleRem(){ S.remOn=!S.remOn; saveS(); updateStats(); if(S.remOn){ reqNotif(); toast('🔔 Recordatorio activado'); } else toast('Recordatorio desactivado'); }
-function saveRemTime(v){ S.remTime=v; saveS(); }
-function changeFont(v){ S.fontSize=v; saveS(); applyFont(); }
-function applyFont(){ var sz=(S.fontSize||'1')+'rem'; var els=document.querySelectorAll('.sec-text,.verse-text,.rv-title'); for(var i=0;i<els.length;i++){ els[i].style.fontSize=sz; } }
 function resetProg(){ if(confirm('¿Reiniciar progreso? Los favoritos y notas se conservan.')){ S.readDays=[]; S.streak=0; saveS(); refresh(); toast('Progreso reiniciado'); } }
-function reqNotif(){
-  if(!('Notification' in window)) return;
-  try{
-    var p = Notification.requestPermission();
-    if(p && p.then) p.then(function(r){ if(r!=='granted') toast('Activa notificaciones en ajustes'); });
-  }catch(e){
-    try{ Notification.requestPermission(function(r){}); }catch(e2){}
-  }
-}
-function checkRem(){
-  var now=new Date(),_rp=(S.remTime||'07:00').split(':'),h=parseInt(_rp[0]),m=parseInt(_rp[1]);
-  if(now.getHours()===h&&Math.abs(now.getMinutes()-m)<=1&&'Notification' in window&&Notification.permission==='granted'){
-    var t=getToday(),d=DD[t-1];
-    new Notification('365 Dias Sin Temor - Dia '+t,{body:d.title});
-  }
-}
 
 // ══════════════════════════════════════════════════════
 // NAVEGACIÓN
@@ -876,8 +809,7 @@ function updateStats(){
   document.getElementById('st-st').textContent=S.streak;
   document.getElementById('st-fv').textContent=S.favs.length;
   document.getElementById('st-lf').textContent=365-r;
-  document.getElementById('rem-tog').className='toggle'+(S.remOn?' on':'');
-}
+  }
 
 function refresh(){ updateHome(); renderList(); renderFavs(); updateStats(); }
 
@@ -907,8 +839,7 @@ document.addEventListener('keydown',function(e){
 function startApp(){
   var nm=(document.getElementById('wlc-name').value||'').trim();
   if(nm){
-    S.userName=nm;
-    saveS();
+    S.userName=nm; saveS();
     try{document.getElementById('u-name').value=nm;}catch(e){}
     try{document.getElementById('top-sub').textContent='Hola, '+nm+' 👋';}catch(e){}
   }
@@ -924,4 +855,5 @@ try{
   }
 }catch(e){}
 </script>
-</b
+</body>
+</html>

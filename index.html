@@ -481,8 +481,10 @@ body{font-family:'Crimson Text',Georgia,serif;background:var(--cream);color:var(
           <div class="set-row">
             <div><div class="set-row-label">Tamaño de texto</div><div class="set-row-desc">Para leer más cómodo</div></div>
             <select class="set-sel" id="fsize" onchange="changeFont(this.value)">
+              <option value="0.85">Pequeño</option>
               <option value="1">Normal</option>
-              <option value="1.1">Grande</option>
+              <option value="1.15">Grande</option>
+              <option value="1.3">Muy grande</option>
               <option value="1.2">Muy Grande</option>
             </select>
           </div>
@@ -771,6 +773,7 @@ function openDay(n){
   document.getElementById('rv-ref').textContent=d.reflection;
   document.getElementById('rv-pr').textContent=d.prayer;
   document.getElementById('rv-nt').value=S.notes[n]||'';
+  try{applyFont();}catch(e){}
   var isR=S.readDays.indexOf(n)>=0;
   var db=document.getElementById('rv-done');
   db.textContent=isR?'✓ ¡Ya leíste este día!':'✓ Marcar como leído';
@@ -828,14 +831,22 @@ function saveName(v){ S.userName=v; saveS(); document.getElementById('top-sub').
 function toggleRem(){ S.remOn=!S.remOn; saveS(); updateStats(); if(S.remOn){ reqNotif(); toast('🔔 Recordatorio activado'); } else toast('Recordatorio desactivado'); }
 function saveRemTime(v){ S.remTime=v; saveS(); }
 function changeFont(v){ S.fontSize=v; saveS(); applyFont(); }
-function applyFont(){ var els=document.querySelectorAll('.sec-text,.verse-text'); for(var i=0;i<els.length;i++){ els[i].style.fontSize=(S.fontSize||'1')+'rem'; } }
+function applyFont(){ var sz=(S.fontSize||'1')+'rem'; var els=document.querySelectorAll('.sec-text,.verse-text,.rv-title'); for(var i=0;i<els.length;i++){ els[i].style.fontSize=sz; } }
 function resetProg(){ if(confirm('¿Reiniciar progreso? Los favoritos y notas se conservan.')){ S.readDays=[]; S.streak=0; saveS(); refresh(); toast('Progreso reiniciado'); } }
-function reqNotif(){ if('Notification' in window){ try{ Notification.requestPermission(function(p){ if(p!=='granted') toast('⚠ Activa las notificaciones'); }); }catch(e){} } }
+function reqNotif(){
+  if(!('Notification' in window)) return;
+  try{
+    var p = Notification.requestPermission();
+    if(p && p.then) p.then(function(r){ if(r!=='granted') toast('Activa notificaciones en ajustes'); });
+  }catch(e){
+    try{ Notification.requestPermission(function(r){}); }catch(e2){}
+  }
+}
 function checkRem(){
-  var now=new Date(),[h,m]=(S.remTime||'07:00').split(':').map(Number);
+  var now=new Date(),_rp=(S.remTime||'07:00').split(':'),h=parseInt(_rp[0]),m=parseInt(_rp[1]);
   if(now.getHours()===h&&Math.abs(now.getMinutes()-m)<=1&&'Notification' in window&&Notification.permission==='granted'){
     var t=getToday(),d=DD[t-1];
-    new Notification('📖 365 Días Sin Temor — Día '+t,{body:d.title+': '+d.verse.slice(0,70)+'…'});
+    new Notification('365 Dias Sin Temor - Dia '+t,{body:d.title});
   }
 }
 
@@ -895,12 +906,13 @@ document.addEventListener('keydown',function(e){
 <script>
 function startApp(){
   var nm=(document.getElementById('wlc-name').value||'').trim();
-  if(nm){S.userName=nm;saveS();}
+  if(nm){
+    S.userName=nm;
+    saveS();
+    try{document.getElementById('u-name').value=nm;}catch(e){}
+    try{document.getElementById('top-sub').textContent='Hola, '+nm+' 👋';}catch(e){}
+  }
   document.getElementById('welcome').style.display='none';
-  try{
-    var sub=document.getElementById('top-sub');
-    if(sub) sub.textContent=nm?('Hola, '+nm+' ������'):'365 Días Sin Temor';
-  }catch(e){}
 }
 </script>
 <script>
@@ -912,5 +924,4 @@ try{
   }
 }catch(e){}
 </script>
-</body>
-</html>
+</b
